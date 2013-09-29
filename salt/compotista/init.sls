@@ -64,3 +64,16 @@ compotista-update_meps:
     - user: bram
     - group: bram
     - cwd: /home/bram/deploy/compotista
+
+compotista-cron:
+  cron.present:
+    - name: cd /home/bram/deploy/compotista/ && ve/bin/python manage.py update_meps && ve/bin/python manage.py convert_meps_to_representatives && ve/bin/python manage.py create_an_export
+    - user: bram
+    - minute: 42
+    - hour: 2
+    - require:
+      - cmd: compotista-syncdb
+      - pkg: cron
+
+cron:
+  pkg.installed
