@@ -48,10 +48,10 @@ python-virtualenv:
 
 compotista-syncdb:
   cmd.run:
-    - name: cd /home/bram/deploy/compotista && ve/bin/python manage.py syncdb --noinput
+    - name: ve/bin/python manage.py syncdb --noinput
     - user: bram
     - group: bram
-    - runas: bram
-    - unless: ls /home/bram/deploy/compotista/db.sqlite
+    - cwd: /home/bram/deploy/compotista
+    - unless: ls db.sqlite
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
