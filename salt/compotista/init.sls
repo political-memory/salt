@@ -24,3 +24,19 @@ git-{{ depot }}:
     - user: bram
     - group: bram
     - makedirs: True
+
+python-virtualenv:
+  pkg.installed
+
+/home/bram/deploy/compotista/ve:
+  file.directory:
+    - user: bram
+    - group: bram
+    - makedirs: True
+  virtualenv.managed:
+    - requirements: /home/bram/deploy/compotista/requirements.txt
+    - user: bram
+    - require:
+      - git: git-compotista
+      - file: /home/bram/deploy/compotista/ve
+      - pkg: python-virtualenv
