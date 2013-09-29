@@ -7,6 +7,8 @@ git-{{ depot }}:
     - runas: bram
     - require:
       - file: /home/bram/deploy
+    - require_in:
+      - cmd: compotista-syncdb
 
 {% if depot != 'compotista' %}
 /home/bram/deploy/compotista/{{ depot|replace('django-', '')|replace('-', '_') }}:
@@ -17,6 +19,8 @@ git-{{ depot }}:
     - require:
       - git: git-compotista
       - git: git-{{ depot }}
+    - require_in:
+      - cmd: compotista-syncdb
 {% endif %}
 {% endfor %}
 
@@ -41,3 +45,13 @@ python-virtualenv:
       - git: git-compotista
       - file: /home/bram/deploy/compotista/ve
       - pkg: python-virtualenv
+
+compotista-syncdb:
+  cmd.run:
+    - name: cd /home/bram/deploy/compotista && ve/bin/python manage.py syncdb --noinput
+    - user: bram
+    - group: bram
+    - runas: bram
+    - unless: ls /home/bram/deploy/compotista/db.sqlite
+    - require:
+      - virtualenv: /home/bram/deploy/compotista/ve
