@@ -10,7 +10,7 @@ git-{{ depot }}:
 {% if depot != 'compotista' %}
 /home/bram/deploy/compotista/{{ depot|replace('django-', '')|replace('-', '_') }}:
   file.symlink:
-    - target: /home/bram/deploy/compotista/{{ depot|replace('django-', '')|replace('-', '_')}}
+    - target: /home/bram/deploy/{{ depot }}/{{ depot|replace('django-', '')|replace('-', '_')}}
     - user: bram
     - group: bram
     - require:
