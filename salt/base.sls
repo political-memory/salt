@@ -4,3 +4,6 @@ base-pkgs:
       - git
       - python
       - wget
+      - htop
+      - screen
+      - tig
