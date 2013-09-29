@@ -55,3 +55,12 @@ compotista-syncdb:
     - unless: ls db.sqlite
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
+    - watch_in:
+      - cmd: compotista-update_meps
+
+compotista-update_meps:
+  cmd.wait:
+    - name: ve/bin/python manage.py update_meps
+    - user: bram
+    - group: bram
+    - cwd: /home/bram/deploy/compotista
