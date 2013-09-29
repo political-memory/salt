@@ -7,3 +7,10 @@ base-pkgs:
       - htop
       - screen
       - tig
+      - locate
+      - python-pip
+  pip.installed:
+    - names:
+      - debug
+    - require:
+      - pkg: python-pip
