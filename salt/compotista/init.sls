@@ -4,6 +4,7 @@ git-{{ depot }}:
     - name: https://github.com/{{ user }}/{{ depot }}.git
     - target: /home/bram/deploy/{{ depot }}
     - user: bram
+    - runas: bram
     - require:
       - file: /home/bram/deploy
 
