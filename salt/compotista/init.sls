@@ -40,7 +40,7 @@ python-virtualenv:
     - makedirs: True
   virtualenv.managed:
     - requirements: /home/bram/deploy/compotista/requirements.txt
-    - user: bram
+    - runas: bram
     - require:
       - git: git-compotista
       - file: /home/bram/deploy/compotista/ve
