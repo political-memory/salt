@@ -3,3 +3,7 @@ supervisor:
     - installed
   service:
     - running
+
+supervisor-update:
+  cmd.wait:
+    - name: supervisorctl update
