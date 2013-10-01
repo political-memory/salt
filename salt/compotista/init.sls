@@ -77,3 +77,14 @@ compotista-cron:
 
 cron:
   pkg.installed
+
+additional-pip-pkgs:
+  pip.installed:
+    - names:
+      - ipython
+      - debug
+      - gunicorn
+    - user: bram
+    - bin_env: /home/bram/deploy/compotista/ve/bin/pip
+    - require:
+      - virtualenv: /home/bram/deploy/compotista/ve
