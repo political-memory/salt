@@ -1,0 +1,2 @@
+cron:
+  pkg.installed

@@ -1,7 +1,16 @@
-{% for user, depot in [('Psycojoker', 'compotista'), ('Psycojoker', 'django-parltrack-meps'), ('Psycojoker', 'django-parltrack-meps-to-representatives'), ('yohanboniface', 'django-representatives')] %}
+include:
+  - nginx
+  - supervisor
+  - parltrack_meps
+  - deploy
+  - virtualenv
+  - cron
+  - representatives
+
+{% for depot in ['compotista', 'django-parltrack-meps-to-representatives'] %}
 git-{{ depot }}:
   git.latest:
-    - name: https://github.com/{{ user }}/{{ depot }}.git
+    - name: https://github.com/Psycojoker/{{ depot }}.git
     - target: /home/bram/deploy/{{ depot }}
     - user: bram
     - runas: bram
@@ -24,14 +33,27 @@ git-{{ depot }}:
 {% endif %}
 {% endfor %}
 
-/home/bram/deploy:
-  file.directory:
+/home/bram/deploy/compotista/parltrack_meps:
+  file.symlink:
+    - target: /home/bram/deploy/django-parltrack-meps/parltrack_meps
     - user: bram
     - group: bram
-    - makedirs: True
+    - require:
+      - git: git-compotista
+      - git: git-django-parltrack-votes
+    - require_in:
+      - cmd: compotista-syncdb
 
-python-virtualenv:
-  pkg.installed
+/home/bram/deploy/compotista/representatives:
+  file.symlink:
+    - target: /home/bram/deploy/django-representatives/representatives
+    - user: bram
+    - group: bram
+    - require:
+      - git: git-compotista
+      - git: git-django-representatives
+    - require_in:
+      - cmd: compotista-syncdb
 
 /home/bram/deploy/compotista/ve:
   file.directory:
@@ -55,6 +77,7 @@ compotista-syncdb:
     - unless: ls db.sqlite
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
+      - git: git-parltrack-meps
     - watch_in:
       - cmd: compotista-update_meps
 
@@ -75,10 +98,7 @@ compotista-cron:
       - cmd: compotista-syncdb
       - pkg: cron
 
-cron:
-  pkg.installed
-
-additional-pip-pkgs:
+compotista-additional-pip-pkgs:
   pip.installed:
     - names:
       - ipython
@@ -88,3 +108,10 @@ additional-pip-pkgs:
     - bin_env: /home/bram/deploy/compotista/ve/bin/pip
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
+
+/etc/supervisor/conf.d/compotista.conf:
+  file.managed:
+    - source: salt://compotista/supervisor.conf
+    - makedirs: true
+    - watch_in:
+      - cmd: supervisor-update
