@@ -10,6 +10,7 @@ base-pkgs:
       - locate
       - python-pip
       - net-tools
+      - strace
   pip.installed:
     - names:
       - debug
