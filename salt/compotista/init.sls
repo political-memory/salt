@@ -133,16 +133,10 @@ compotista_settings_local:
     - require:
       - git: git-compotista
 
-bram:
-  postgres_user.present:
-    - superuser: True
-
 compotista:
   postgres_database.present:
     - runas: bram
     - user: bram
-    - require:
-      - postgres_user: bram
     - watch_in:
       - cmd: compotista-syncdb
 
