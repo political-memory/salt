@@ -75,7 +75,7 @@ toutatis-update_meps:
 
 toutatis-cron:
   cron.present:
-    - name: cd /home/bram/deploy/toutatis/ && ve/bin/python manage.py update_meps
+    - name: cd /home/bram/deploy/toutatis/ && ve/bin/python manage.py update_meps && ve/bin/python manage.py import_ep_votes_data
     - user: bram
     - minute: 42
     - hour: 2
