@@ -6,6 +6,7 @@ include:
   - virtualenv
   - cron
   - representatives
+  - postgresql
 
 {% for depot in ['compotista', 'django-parltrack-meps-to-representatives'] %}
 git-{{ depot }}:
@@ -60,6 +61,8 @@ git-{{ depot }}:
     - user: bram
     - group: bram
     - makedirs: True
+    - require:
+      - git: git-compotista
   virtualenv.managed:
     - requirements: /home/bram/deploy/compotista/requirements.txt
     - runas: bram
@@ -69,15 +72,15 @@ git-{{ depot }}:
       - pkg: python-virtualenv
 
 compotista-syncdb:
-  cmd.run:
+  cmd.wait:
     - name: ve/bin/python manage.py syncdb --noinput
     - user: bram
     - group: bram
-    - cwd: /home/bram/deploy/compotista
-    - unless: ls db.sqlite
+    - cwd: /home/bram/deploy/compotista/
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
       - git: git-parltrack-meps
+      - postgres_database: compotista
     - watch_in:
       - cmd: compotista-update_meps
 
@@ -98,16 +101,56 @@ compotista-cron:
       - cmd: compotista-syncdb
       - pkg: cron
 
+additionnal-pkgs:
+  pkg.installed:
+    - names:
+      - postgresql-server-dev-9.1
+      - python-dev
+    - require_in:
+      - pip: compotista-additional-pip-pkgs
+
 compotista-additional-pip-pkgs:
   pip.installed:
     - names:
       - ipython
       - debug
       - gunicorn
+      - psycopg2
     - user: bram
     - bin_env: /home/bram/deploy/compotista/ve/bin/pip
     - require:
       - virtualenv: /home/bram/deploy/compotista/ve
+
+compotista_settings_local:
+  file.managed:
+    - name: /home/bram/deploy/compotista/compotista/settings_local.py
+    - source: salt://compotista/settings_local.py
+    - user: bram
+    - group: bram
+    - watch_in:
+      - cmd: compotista-syncdb
+      - cmd: restart-compotista
+    - require:
+      - git: git-compotista
+
+bram:
+  postgres_user.present:
+    - superuser: True
+
+compotista:
+  postgres_database.present:
+    - runas: bram
+    - user: bram
+    - require:
+      - postgres_user: bram
+    - watch_in:
+      - cmd: compotista-syncdb
+
+restart-compotista:
+  cmd.wait:
+    - name: supervisorctl restart compotista
+    - require:
+      - file: /etc/supervisor/conf.d/compotista.conf
 
 /etc/supervisor/conf.d/compotista.conf:
   file.managed:
@@ -115,3 +158,7 @@ compotista-additional-pip-pkgs:
     - makedirs: true
     - watch_in:
       - cmd: supervisor-update
+    - require:
+      - service: postgresql
+      - file: compotista_settings_local
+      - postgres_database: compotista
