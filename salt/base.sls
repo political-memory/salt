@@ -9,6 +9,7 @@ base-pkgs:
       - tig
       - locate
       - python-pip
+      - net-tools
   pip.installed:
     - names:
       - debug
