@@ -101,7 +101,7 @@ compotista-cron:
       - cmd: compotista-syncdb
       - pkg: cron
 
-additionnal-pkgs:
+compotista-additionnal-pkgs:
   pkg.installed:
     - names:
       - postgresql-server-dev-9.1
