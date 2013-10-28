@@ -54,21 +54,26 @@ git-toutatis:
       - pkg: python-virtualenv
 
 toutatis-syncdb:
-  cmd.run:
+  cmd.wait:
     - name: ve/bin/python manage.py syncdb --noinput
     - user: bram
     - group: bram
     - cwd: /home/bram/deploy/toutatis
-    - unless: ls db.sqlite
     - require:
       - virtualenv: /home/bram/deploy/toutatis/ve
       - git: git-parltrack-meps
-    - watch_in:
-      - cmd: toutatis-update_meps
+      - pip: toutatis-additional-pip-pkgs
 
 toutatis-update_meps:
   cmd.wait:
     - name: ve/bin/python manage.py update_meps
+    - user: bram
+    - group: bram
+    - cwd: /home/bram/deploy/toutatis
+
+toutatis-import_ep_votes_data:
+  cmd.wait:
+    - name: ve/bin/python manage.py import_ep_votes_data
     - user: bram
     - group: bram
     - cwd: /home/bram/deploy/toutatis
@@ -83,16 +88,46 @@ toutatis-cron:
       - cmd: toutatis-syncdb
       - pkg: cron
 
+toutatis-additionnal-pkgs:
+  pkg.installed:
+    - names:
+      - postgresql-server-dev-9.1
+      - python-dev
+    - require_in:
+      - pip: toutatis-additional-pip-pkgs
+
 toutatis-additional-pip-pkgs:
   pip.installed:
     - names:
       - ipython
       - debug
       - gunicorn
+      - psycopg2
     - user: bram
     - bin_env: /home/bram/deploy/toutatis/ve/bin/pip
     - require:
       - virtualenv: /home/bram/deploy/toutatis/ve
+
+toutatis_settings_local:
+  file.managed:
+    - name: /home/bram/deploy/toutatis/toutatis/settings_local.py
+    - source: salt://toutatis/settings_local.py
+    - user: bram
+    - group: bram
+    - watch_in:
+      - cmd: toutatis-syncdb
+      #- cmd: restart-toutatis
+    - require:
+      - git: git-toutatis
+
+toutatis:
+  postgres_database.present:
+    - runas: bram
+    - user: bram
+    - watch_in:
+      - cmd: toutatis-syncdb
+      - cmd: toutatis-update_meps
+      - cmd: toutatis-import_ep_votes_data
 
 {#
 /etc/supervisor/conf.d/toutatis.conf:
