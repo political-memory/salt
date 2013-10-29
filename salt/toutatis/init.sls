@@ -143,3 +143,22 @@ toutatis-restart:
   cmd.wait:
     - require:
       - file: /etc/supervisor/conf.d/toutatis.conf
+
+/etc/nginx/sites-available/toutatis.conf:
+  file.managed:
+    - source: salt://nginx/template.conf
+    - template: jinja
+    - context:
+        static: False
+        name: toutatis
+        port: 1110
+    - require:
+      - pkg: nginx
+
+/etc/nginx/sites-enabled/toutatis.conf:
+  file.symlink:
+    - target: /etc/nginx/sites-available/toutatis.conf
+    - require:
+      - file: /etc/nginx/sites-available/toutatis.conf
+    - watch_in:
+      - cmd: nginx-reload
