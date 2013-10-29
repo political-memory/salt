@@ -165,5 +165,13 @@ restart-compotista:
         static: False
         name: compotista
         port: 7910
+    - require:
+      - pkg: nginx
+
+/etc/nginx/sites-enabled/compotista.conf:
+  file.symlink:
+    - target: /etc/nginx/sites-available/compotista.conf
+    - require:
+      - file: /etc/nginx/sites-available/compotista.conf
     - watch_in:
       - cmd: nginx-reload
