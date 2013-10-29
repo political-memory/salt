@@ -129,11 +129,17 @@ toutatis:
       - cmd: toutatis-update_meps
       - cmd: toutatis-import_ep_votes_data
 
-{#
 /etc/supervisor/conf.d/toutatis.conf:
   file.managed:
     - source: salt://toutatis/supervisor.conf
     - makedirs: true
+    - require:
+      - service: supervisor
+      - postgres_database: toutatis
     - watch_in:
       - cmd: supervisor-update
-#}
+
+toutatis-restart:
+  cmd.wait:
+    - require:
+      - file: /etc/supervisor/conf.d/toutatis.conf
