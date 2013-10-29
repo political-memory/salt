@@ -14,5 +14,6 @@ base-pkgs:
   pip.installed:
     - names:
       - debug
+      - pg_activity
     - require:
       - pkg: python-pip
