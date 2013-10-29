@@ -11,6 +11,7 @@ base-pkgs:
       - python-pip
       - net-tools
       - strace
+      - curl
   pip.installed:
     - names:
       - debug
