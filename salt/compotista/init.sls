@@ -156,3 +156,14 @@ restart-compotista:
       - service: postgresql
       - file: compotista_settings_local
       - postgres_database: compotista
+
+/etc/nginx/sites-available/compotista.conf:
+  file.managed:
+    - source: salt://nginx/template.conf
+    - template: jinja
+    - context:
+        static: False
+        name: compotista
+        port: 7910
+    - watch_in:
+      - cmd: nginx-reload
