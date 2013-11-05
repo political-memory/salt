@@ -118,9 +118,9 @@ toutatis_settings_local:
     - group: bram
     - watch_in:
       - cmd: toutatis-syncdb
-      #- cmd: restart-toutatis
+      - cmd: toutatis-restart
     - require:
-      - git: git-toutatis
+      - git: git-compotista
 
 toutatis:
   postgres_database.present:
