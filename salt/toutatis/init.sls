@@ -143,6 +143,7 @@ toutatis:
 
 toutatis-restart:
   cmd.wait:
+    - name: supervisorctl restart toutatis
     - require:
       - file: /etc/supervisor/conf.d/toutatis.conf
 
