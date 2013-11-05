@@ -17,6 +17,8 @@ git-toutatis:
       - file: /home/bram/deploy
     - require_in:
       - cmd: toutatis-syncdb
+    - watch_in:
+      - cmd: toutatis-restart
 
 /home/bram/deploy/toutatis/parltrack_votes:
   file.symlink:
