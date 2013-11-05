@@ -19,6 +19,8 @@ git-{{ depot }}:
       - file: /home/bram/deploy
     - require_in:
       - cmd: compotista-syncdb
+    - watch_in:
+      - cmd: compotista-restart
 
 {% if depot != 'compotista' %}
 /home/bram/deploy/compotista/{{ depot|replace('django-', '')|replace('-', '_') }}:
