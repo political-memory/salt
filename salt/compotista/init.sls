@@ -129,7 +129,7 @@ compotista_settings_local:
     - group: bram
     - watch_in:
       - cmd: compotista-syncdb
-      - cmd: restart-compotista
+      - cmd: compotista-restart
     - require:
       - git: git-compotista
 
@@ -140,7 +140,7 @@ compotista:
     - watch_in:
       - cmd: compotista-syncdb
 
-restart-compotista:
+compotista-restart:
   cmd.wait:
     - name: supervisorctl restart compotista
     - require:
